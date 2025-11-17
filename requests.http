@@ -1,0 +1,30 @@
+### Create todo
+POST http://localhost:8080/api/todos
+Content-Type: application/json
+
+{
+  "title": "買い物",
+  "description": "牛乳を買う"
+}
+
+### List todos
+GET http://localhost:8080/api/todos
+
+### Get todo by ID
+GET http://localhost:8080/api/todos/1
+
+### Update todo
+PUT http://localhost:8080/api/todos/1
+Content-Type: application/json
+
+{
+  "title": "買い物（更新）",
+  "description": "牛乳、パン",
+  "completed": false
+}
+
+### Toggle todo
+PATCH http://localhost:8080/api/todos/1/toggle
+
+### Delete todo
+DELETE http://localhost:8080/api/todos/1
