@@ -12,38 +12,34 @@
 - `cmd/api` : HTTP サーバのエントリポイント
 
 **Prerequisites**
-- Go 1.20 以上がインストールされていること
+- Go 1.25.4 以上がインストールされていること (モジュール `go.mod` に合わせてください)
 - Docker（ローカルで Postgres を使う場合）
 
 **Quick Start (ローカル実行)**
 
-1) Postgres を Docker で起動（デフォルト設定）
+1) Postgres を Docker で起動（推奨）
 
-簡易で起動する場合:
+以下のように環境変数で DB 名やユーザーを指定して起動してください。コンテナ名は `todoapp` のように分かりやすい名前を付けると管理しやすいです。データ永続化が必要な場合は `-v` でボリュームをマウントしてください。
 
 ```sh
+# 環境変数が設定されていればそれを使い、未設定ならデフォルト値を使う例
 docker run --name todoapp \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=todoapp \
-  -p 5432:5432 -d postgres:15
+  -e POSTGRES_USER=${POSTGRES_USER:-postgres} \
+  -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres} \
+  -e POSTGRES_DB=${POSTGRES_DB:-todoapp} \
+  -p 5432:5432 \
+  -v todo-data:/var/lib/postgresql/data \
+  -d postgres:15
 ```
 
-環境変数を明示して DB 名などを設定する場合（推奨）:
-
-```sh
-docker run --name todo-postgres \
-	-e POSTGRES_USER=postgres \
-	-e POSTGRES_PASSWORD=postgres \
-	-e POSTGRES_DB=todoapp \
-	-p 5432:5432 -d postgres:15
-```
+この書き方では、必要に応じてホスト側で `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` を設定すればその値が使われ、未設定時は `postgres` / `postgres` / `todoapp` がデフォルトとして使われます。データを残さない一時起動を行う場合は `-v` を外して実行してください。
 
 2) 依存パッケージを取得してモジュールを整える
 
 ```sh
 cd /path/to/go-todo-app
-go get github.com/lib/pq@latest
+# Postgres ドライバとルーティング (gorilla/mux) を追加
+go get github.com/lib/pq@latest github.com/gorilla/mux@latest
 go mod tidy
 ```
 
